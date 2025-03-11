@@ -40,27 +40,64 @@ public class Lexer{
                     current++;
                     break;
                 case '"':
-                    String s = "";
-                    c = json.charAt(++current);
-                    while(c != '"') {
-                        s += c;
-                        c = json.charAt(++current);
-                    }
-                    tokens.add(new JSONToken(JSONTokenType.STRING, s));
+                    tokens.add(new JSONToken(JSONTokenType.STRING, readString()));
                     current++;
-                    break;
+                    break;    
                 default:
+                    if(c == ' ') {
+                        current++;
+                    }
+                    else if(Character.isLetter(c)){
+                        String s = "";
+                        s = readWord();
+                        if(s.equals("true") || s.equals("false")) {
+                            tokens.add(new JSONToken(JSONTokenType.BOOLEAN, s));
+                        }
+                        else if (s.equals("null")) {
+                            tokens.add(new JSONToken(JSONTokenType.NULL, s));
+                        }
+                        else{
+                            throw new IllegalArgumentException("unknown token : " + s);
+                        }
+                    }
+                    else if(Character.isDigit(c) || c == '-') {
+                        tokens.add(new JSONToken(JSONTokenType.NUMBER, readNumber()));
+                    }
+                    else{
+                        throw new IllegalArgumentException("Unexpected character : " + c);
+                    }
                     break;
             }
         }
+        return tokens;
     }
 
-    public String readString(int position){
+    public String readString(){
         String s = "";
-        char c = json.charAt(++position);
+        char c = json.charAt(++current);
         while(c != '"'){
             s += c;
-            c = json.charAt(++position);
+            c = json.charAt(++current);
+            if(current >= json.length())
+                throw new IllegalArgumentException("string unterminated");
         }
+        return s;
+    }
+
+    public String readWord(){
+        String s = "";
+        while(current < json.length() && Character.isLetter(json.charAt(current))) {
+            s+=json.charAt(current++);
+        }
+        return s;
+    }
+
+    public String readNumber(){
+        String s = "";
+        while(current < json.length() && Character.isDigit(json.charAt(current)) || 
+        json.charAt(current) == '.' || json.charAt(current) == '-') {
+            s+=json.charAt(current++);
+        }
+        return s;
     }
 }

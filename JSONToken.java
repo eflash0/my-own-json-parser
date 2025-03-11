@@ -16,4 +16,9 @@ public class JSONToken {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return "type : " + type + " / " + "value : " + value + "\n";
+    }
+
 }
