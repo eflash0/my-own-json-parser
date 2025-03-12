@@ -61,7 +61,11 @@ public class Lexer{
                         }
                     }
                     else if(Character.isDigit(c) || c == '-') {
-                        tokens.add(new JSONToken(JSONTokenType.NUMBER, readNumber()));
+                        String s = readNumber();
+                        if(!isNumber(s)){
+                            throw new IllegalArgumentException("unknown token : " + s);
+                        }
+                        tokens.add(new JSONToken(JSONTokenType.NUMBER, s));
                     }
                     else{
                         throw new IllegalArgumentException("Unexpected character : " + c);
@@ -95,9 +99,18 @@ public class Lexer{
     public String readNumber(){
         String s = "";
         while(current < json.length() && Character.isDigit(json.charAt(current)) || 
-        json.charAt(current) == '.' || json.charAt(current) == '-') {
+        json.charAt(current) == '.' || json.charAt(current) == '-' || json.charAt(current) == 'e') {
             s+=json.charAt(current++);
         }
         return s;
     }
+
+    public boolean isNumber(String s){
+        try{
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }    
 }

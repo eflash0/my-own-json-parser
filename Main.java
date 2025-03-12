@@ -9,7 +9,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         try {
-            File file = new File("tests/step3/invalid.json");
+            File file = new File("tests/step4/valid.json");
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             StringBuilder sb = new StringBuilder();
             String line;
