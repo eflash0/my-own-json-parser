@@ -24,16 +24,31 @@ public class Parser {
         if(tokens == null || tokens.isEmpty())
             throw new IllegalArgumentException("nothing to parse");
         JSONToken token = tokens.get(index);
+        // System.out.println(token.getValue());
         if(token.getType() == JSONTokenType.START_OBJECT){
             index++;
-            while (index < tokens.size() && token.getType() != JSONTokenType.END_OBJECT) {
-                JSONToken keyToken = tokens.get(index);
+            while (index < tokens.size() && tokens.get(index).getType() != JSONTokenType.END_OBJECT) {
+                JSONToken keyToken = tokens.get(index++);
                 if(keyToken.getType() != JSONTokenType.STRING) {
                     throw new IllegalArgumentException("key must be a string");
                 }
                 String key = keyToken.getValue();
+                System.out.println(key);
+
+                JSONToken colonToken = tokens.get(index++);
+                if(colonToken.getType() != JSONTokenType.COLON)
+                    throw new IllegalArgumentException("expected a colon after key");
+
+                token = tokens.get(index++);
+                System.out.println(token.getValue());
+                jsonObject.put(key, parseObject(token));
+
+                if(tokens.get(index).getType() == JSONTokenType.COMMA)
+                    index++;
             }    
         }
+        index++;
+        return jsonObject;
     }
 
     public Object parseObject(JSONToken token){
@@ -49,6 +64,7 @@ public class Parser {
             case START_ARRAY:
                 return parseArray();
             case START_OBJECT:
+                --index;
                 return parse();
             default:
                 throw new IllegalArgumentException("unexpected token");
@@ -98,7 +114,11 @@ public class Parser {
         while(index < tokens.size() && tokens.get(index).getType() != JSONTokenType.END_ARRAY) {
             Object object = parseObject(tokens.get(index++));
             list.add(object);
+            if(tokens.get(index).getType() == JSONTokenType.COMMA) {
+                index++;
+            }
         }
+        index++;
         return list;
     }
 }
