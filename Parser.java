@@ -33,14 +33,14 @@ public class Parser {
                     throw new IllegalArgumentException("key must be a string");
                 }
                 String key = keyToken.getValue();
-                System.out.println(key);
+                // System.out.println(key);
 
                 JSONToken colonToken = tokens.get(index++);
                 if(colonToken.getType() != JSONTokenType.COLON)
                     throw new IllegalArgumentException("expected a colon after key");
 
                 token = tokens.get(index++);
-                System.out.println(token.getValue());
+                // System.out.println(token.getValue());
                 jsonObject.put(key, parseObject(token));
 
                 if(tokens.get(index).getType() == JSONTokenType.COMMA)
